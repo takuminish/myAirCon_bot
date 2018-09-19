@@ -31,7 +31,11 @@ EM.run do
     p [:message, JSON.parse(event.data)]
     data = JSON.parse(event.data)
     p data["text"]
-    aircon.operation("cool")
+    
+    if (data["channel"] === ENV["CHANNEL"]) then
+      aircon.operation(data["text"])
+    end
+    
   end
   
   ws.on :close do
