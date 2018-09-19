@@ -30,10 +30,16 @@ EM.run do
   ws.on :message do |event|
     p [:message, JSON.parse(event.data)]
     data = JSON.parse(event.data)
-    p data["text"]
-    
-    if (data["channel"] === ENV["CHANNEL"]) then
-      aircon.operation(data["text"])
+
+    if (data["user"] === ENV["SLACK_USER"] && data["channel"] === ENV["CHANNEL"]) then
+      if (data["text"] === "冷房" || data["text"] === "暖房" || data["text"] === "電源オフ") then
+        aircon.operation(data["text"])
+        ws.send({
+                type: "message",
+                channel: ENV["CHANNEL"],
+                text: "<@#{data['user']}> #{data['text']}にしたよ!!\nいまのエアコンの状態は#{aircon.getStatus}だよ。"
+                }.to_json)
+      end
     end
     
   end

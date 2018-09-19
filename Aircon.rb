@@ -14,6 +14,11 @@ class Aircon
     end
   end
 
+
+  def getStatus
+    return @status
+  end
+  
   def cool
 
     @status = "cool"
