@@ -3,17 +3,36 @@
 require 'http'
 require 'json'
 require 'dotenv'
-#require 'eventmachine'
-#require 'faye/websocket'
+require 'eventmachine'
+require 'faye/websocket'
 
 Dotenv.load
 
-response = HTTP.post("https://slack.com/api/chat.postMessage",
+response = HTTP.post("https://slack.com/api/rtm.start",
                      params: {
                        token: ENV["SLACK_TOKEN"],
-                       channel: "#general",
-                       text: "こんにちは",
-                       as_user: true
                      }
                     )
-puts JSON.pretty_generate(JSON.parse(response.body))
+rc = JSON.parse(response.body)
+
+url = rc["url"]
+
+EM.run do
+  ws = Faye::WebSocket::Client.new(url)
+
+  ws.on :open do
+    p "接続成功"
+  end
+
+  ws.on :message do |event|
+    p [:message, JSON.parse(event.data)]
+    data = JSON.parse(event.data)
+    p data["text"]
+  end
+  
+  ws.on :close do
+    p "接続終了"
+    ws = nil
+    EM.stop
+  end
+end
