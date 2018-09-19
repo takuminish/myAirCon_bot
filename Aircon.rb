@@ -21,19 +21,19 @@ class Aircon
   
   def cool
 
-    @status = "cool"
+    @status = "冷房"
     system(ENV["COOL"])
   end
 
   def hot
 
-    @status = "hot"
+    @status = "暖房"
      system(ENV["HOT"])
   end
 
   def off
 
-    @status = "off"
+    @status = "電源オフ"
      system(ENV["OFF"])
   end
     
