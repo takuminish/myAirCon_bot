@@ -1,5 +1,6 @@
 # coding: utf-8
 
+require './Aircon.rb'
 require 'http'
 require 'json'
 require 'dotenv'
@@ -7,6 +8,8 @@ require 'eventmachine'
 require 'faye/websocket'
 
 Dotenv.load
+
+aircon = Aircon.new
 
 response = HTTP.post("https://slack.com/api/rtm.start",
                      params: {
@@ -28,6 +31,7 @@ EM.run do
     p [:message, JSON.parse(event.data)]
     data = JSON.parse(event.data)
     p data["text"]
+    aircon.operation("cool")
   end
   
   ws.on :close do
