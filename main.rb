@@ -15,7 +15,7 @@ end
 client = Slack::RealTime::Client.new
 
 client.on :hello do
-  puts "connected"
+  puts "client connected"
 end
 
 client.on :message do |data|
