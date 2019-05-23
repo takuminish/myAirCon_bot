@@ -1,5 +1,4 @@
 # coding: utf-8
-require 'http'
 
 class Aircon
   @status = ""
