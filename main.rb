@@ -28,4 +28,10 @@ client.on :message do |data|
     puts data
   end
 end
+
+client.on :closed do
+  puts "client closed"
+  client.start!
+end
+
 client.start!
