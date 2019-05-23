@@ -18,6 +18,12 @@ client.on :hello do
   puts "connected"
 end
 
+client.on :message do |data|
+  if data.channel === ENV["CHANNEL"] && data.user === ENV["SLACK_USER"]
+    p  aircon.operation(data["text"])
+    p data
+  end
+end
 client.start!
 
 =begin
