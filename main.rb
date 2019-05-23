@@ -1,16 +1,26 @@
 # coding: utf-8
 
 require './Aircon.rb'
-require 'http'
-require 'json'
 require 'dotenv'
-require 'eventmachine'
-require 'faye/websocket'
+require 'slack-ruby-client'
 
 Dotenv.load
 
 aircon = Aircon.new
 
+Slack.configure do |conf|
+  conf.token = ENV["SLACK_TOKEN"]
+end
+
+client = Slack::RealTime::Client.new
+
+client.on :hello do
+  puts "connected"
+end
+
+client.start!
+
+=begin
 response = HTTP.post("https://slack.com/api/rtm.start",
                      params: {
                        token: ENV["SLACK_TOKEN"],
@@ -50,3 +60,4 @@ EM.run do
     EM.stop
   end
 end
+=end
