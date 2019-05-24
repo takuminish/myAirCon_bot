@@ -1,4 +1,6 @@
 # coding: utf-8
+require 'net/http'
+
 
 class Aircon
   @status = ""
@@ -27,21 +29,18 @@ class Aircon
   end
   
   def cool
-
     @status = "冷房"
-    system(ENV["COOL"])
+    Net::HTTP.get(ENV["URL"], '/cool', ENV["PORT"])
   end
 
   def hot
-
     @status = "暖房"
-     system(ENV["HOT"])
+    Net::HTTP.get(ENV["URL"], '/hot', ENV["PORT"])
   end
 
   def off
-
     @status = "電源オフ"
-     system(ENV["OFF"])
+    Net::HTTP.get(ENV["URL"], '/off', ENV["PORT"])    
   end
     
 end
