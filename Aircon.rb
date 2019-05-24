@@ -1,5 +1,4 @@
 # coding: utf-8
-require 'http'
 
 class Aircon
   @status = ""
@@ -8,9 +7,17 @@ class Aircon
   def operation(instruction)
 
     case instruction
-    when "冷房" then self.cool
-    when "暖房" then self.hot
-    when "電源オフ" then self.off
+    when "冷房" then
+      self.cool
+      return true
+    when "暖房" then
+      self.hot
+      return true
+    when "電源オフ" then
+      self.off
+      return true
+    else
+      return false
     end
   end
 

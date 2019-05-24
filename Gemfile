@@ -5,8 +5,7 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-gem 'http'
-gem 'json'
-gem 'dotenv'
-gem 'faye-websocket'
 gem 'eventmachine'
+gem 'faye-websocket'
+gem 'dotenv'
+gem 'slack-ruby-client'

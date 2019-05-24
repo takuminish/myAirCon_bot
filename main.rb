@@ -1,52 +1,37 @@
 # coding: utf-8
 
 require './Aircon.rb'
-require 'http'
-require 'json'
 require 'dotenv'
-require 'eventmachine'
-require 'faye/websocket'
+require 'slack-ruby-client'
 
 Dotenv.load
 
 aircon = Aircon.new
 
-response = HTTP.post("https://slack.com/api/rtm.start",
-                     params: {
-                       token: ENV["SLACK_TOKEN"],
-                     }
-                    )
-rc = JSON.parse(response.body)
+Slack.configure do |conf|
+  conf.token = ENV["SLACK_TOKEN"]
+end
 
-url = rc["url"]
+client = Slack::RealTime::Client.new
 
-EM.run do
-  ws = Faye::WebSocket::Client.new(url)
+client.on :hello do
+  puts "client connected"
+end
 
-  ws.on :open do
-    p "接続成功"
-  end
-
-  ws.on :message do |event|
-    p [:message, JSON.parse(event.data)]
-    data = JSON.parse(event.data)
-
-    if (data["user"] === ENV["SLACK_USER"] && data["channel"] === ENV["CHANNEL"]) then
-      if (data["text"] === "冷房" || data["text"] === "暖房" || data["text"] === "電源オフ") then
-        aircon.operation(data["text"])
-        ws.send({
-                type: "message",
-                channel: ENV["CHANNEL"],
-                text: "<@#{data['user']}> #{data['text']}にしたよ!!\nいまのエアコンの状態は#{aircon.getStatus}だよ。"
-                }.to_json)
-      end
+client.on :message do |data|
+  if data.channel === ENV["CHANNEL"] && data.user === ENV["SLACK_USER"]
+    if aircon.operation(data.text)
+      client.message channel: data.channel, text: "<@#{data['user']}> #{data['text']}にしたよ!!\nいまのエアコンの状態は#{aircon.getStatus}だよ。"
+    else
+      client.message channel: data.channel, text: "聞き方が違うかなぁ"
     end
-    
-  end
-  
-  ws.on :close do
-    p "接続終了"
-    ws = nil
-    EM.stop
+    puts data
   end
 end
+
+client.on :closed do
+  puts "client closed"
+  client.start!
+end
+
+client.start!
